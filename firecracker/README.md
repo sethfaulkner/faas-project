@@ -25,6 +25,15 @@ CPU(s):                   5
 # Firecracker
 
 ## Setup
+```bash
+curl -LOJ https://github.com/firecracker-microvm/firecracker/releases/download/v1.13.1/firecracker-v1.13.1-x86_64.tgz
+tar -xvzf firecracker-v1.13.1-x86_64.tgz
+chmod +x release-v1.13.1-x86_64/firecracker-v1.13.1-x86_64
+sudo mv release-v1.13.1-x86_64/firecracker-v1.13.1-x86_64 /usr/local/bin/firecracker
+
+wget https://s3.amazonaws.com/spec.ccfc.min/img/hello/kernel/hello-vmlinux.bin
+wget https://s3.amazonaws.com/spec.ccfc.min/img/hello/fsfiles/hello-rootfs.ext4 
+```
 TODO: Firecracker setup
 
 ## Start Firecracker
