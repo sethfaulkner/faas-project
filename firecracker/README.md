@@ -1,44 +1,65 @@
 # WSL
+Used WSL and Alma Linux 10
 ```powershell
-wsl --install Ubuntu
+wsl --install AlmaLinux-10
 ```
 
 .wslconfig
 ```ini
 [wsl2]
-processors=5      # 2x2 for MicroVMs, 1 for system
+processors=6      # 2x2 for MicroVMs, 2 for system
 ```
 
 ```powershell
-wsl -d Ubuntu
+wsl -d AlmaLinux-10
 ```
 ```bash
+# Verify 6 CPUs
 $ lscpu
 Architecture:             x86_64
   CPU op-mode(s):         32-bit, 64-bit
   Address sizes:          46 bits physical, 48 bits virtual
   Byte Order:             Little Endian
-CPU(s):                   5
-  On-line CPU(s) list:    0-4
+CPU(s):                   6
+  On-line CPU(s) list:    0-5
+
+# Verify kvm
+$ ls /dev/kvm
+/dev/kvm
 ```
 
 # Firecracker
 
 ## Setup
 ```bash
+# Download firecracker
 curl -LOJ https://github.com/firecracker-microvm/firecracker/releases/download/v1.13.1/firecracker-v1.13.1-x86_64.tgz
 tar -xvzf firecracker-v1.13.1-x86_64.tgz
 chmod +x release-v1.13.1-x86_64/firecracker-v1.13.1-x86_64
-sudo mv release-v1.13.1-x86_64/firecracker-v1.13.1-x86_64 /usr/local/bin/firecracker
+sudo mv release-v1.13.1-x86_64/firecracker-v1.13.1-x86_64 firecracker
 
+# Download Alpine and File System
 wget https://s3.amazonaws.com/spec.ccfc.min/img/hello/kernel/hello-vmlinux.bin
-wget https://s3.amazonaws.com/spec.ccfc.min/img/hello/fsfiles/hello-rootfs.ext4 
+wget https://s3.amazonaws.com/spec.ccfc.min/img/hello/fsfiles/hello-rootfs.ext4
+
+# Copy cpu_stress into file system
+sudo mount -o loop ./hello-rootfs.ext4 /mnt/rootfs
+sudo cp ./cpu_stress /mnt/rootfs/init
+sudo chmod +x /mnt/rootfs/init
+sync
+sudo umount /mnt/rootfs
 ```
-TODO: Firecracker setup
 
 ## Start Firecracker
 ```bash
-sudo firecracker --no-api --config-file vmconfig.json
+sudo ./firecracker --no-api --config-file vmconfig.json
+# Login with default root:root
+$ lscpu
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              2
+On-line CPU(s) list: 0,1
 ```
 
 # Initial Test
