@@ -123,7 +123,7 @@ All threads finished.
 
 ## Isloated
 ```bash
-sudo numactl --physcpubind=0-1 --membind=0 firecracker --no-api --config-file vmconfig.json
+sudo numactl --physcpubind=0,1 ./firecracker --no-api --config-file vmconfig.json
 ```
 
 ```bash
@@ -265,12 +265,12 @@ Linux 6.6.87.2-microsoft-standard-WSL2 (GUARD-LAPTOP)   11/08/25        _x86_64_
 ## Multi-Tenent
 ### Tenant 1
 ```bash
-sudo numactl --physcpubind=0-1 --membind=0 firecracker --no-api --config-file vmconfig.json
+sudo numactl --physcpubind=0,1 ./firecracker --no-api --config-file vmconfig.json
 ```
 
 ### Tenant 2
 ```bash
-sudo numactl --physcpubind=2-3 --membind=0 firecracker --no-api --config-file vmconfig.json
+sudo numactl --physcpubind=2,3 ./firecracker --no-api --config-file vmconfig.json
 ```
 
 Verify
