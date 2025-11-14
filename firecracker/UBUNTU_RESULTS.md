@@ -91,5 +91,62 @@ sudo systemd-run --scope -p AllowedCPUs=1,2 ./firecracker --no-api --config-file
 Finished 2 cycles in close to the same time. When run by itself, tenant 2 shows activity only on cores 1 and 2, but is clearly slowing down the progress of tenant 1. Ran the same scenario with `numactl` with nearly identical results.
 
 
+# CPU Pinning - Skewed Allowed Quota
 
+## Isolated
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUQuota=60% ./firecracker --no-api --config-file vmconfig.json
 
+Thread 0 finished 10000000000 iterations in 103.253 s
+Thread 1 finished 10000000000 iterations in 104.771 s
+```
+Very very slow execution.
+
+## Multi-Tenant 
+
+### Tenant 1
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUQuota=60% ./firecracker --no-api --config-file vmconfig.json
+
+Thread 1 finished 10000000000 iterations in 73.860 s
+Thread 0 finished 10000000000 iterations in 74.100 s
+```
+
+### Tenant 2
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUQuota=140% ./firecracker --no-api --config-file vmconfig.json
+
+Thread 1 finished 10000000000 iterations in 15.092 s
+Thread 0 finished 10000000000 iterations in 15.222 s
+```
+
+The first tenant was actually faster. This is due to the CPU being fully allocated, which reduces throttling.
+
+# CPU Pinning - Skewed Weight
+
+## Isolated
+
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUWeight=300 ./firecracker --no-api --config-file vmconfig.json
+
+Thread 0 finished 10000000000 iterations in 10.609 s
+Thread 1 finished 10000000000 iterations in 10.620 s
+```
+
+## Multi-Tenant
+
+### Tenant 1
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUWeight=300 ./firecracker --no-api --config-file vmconfig.json
+
+Thread 0 finished 10000000000 iterations in 20.827 s
+Thread 1 finished 10000000000 iterations in 21.175 s
+```
+
+### Tenant 2
+```bash
+sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUWeight=700 ./firecracker --no-api --config-file vmconfig.json
+
+Thread 0 finished 10000000000 iterations in 15.484 s
+Thread 1 finished 10000000000 iterations in 15.897 s
+```
