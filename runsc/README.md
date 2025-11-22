@@ -15,7 +15,7 @@ Add runtime to docker
 
 # Isolated
 ```bash
-docker run -it --runtime=runsc --cpus=2 --cpuset-cpus="0,1" --memory=512m --rm ubuntu:24.04 bash
+docker run -it --runtime=runsc --rm alpine:3.22.2 sh
 ./cpu_stress
 Thread 0 reached 1000000000 iterations, elapsed: 1.099 s
 Thread 1 reached 1000000000 iterations, elapsed: 1.108 s
