@@ -35,7 +35,7 @@ On-line CPU(s) list: 0,1
 # Initial Test
 ## Isolated
 ```bash
-$ ./cpu_stress
+$ ./cpu_stress 2 10000000000 1000000000
 Thread 0 reached 1000000000 iterations, elapsed: 1.082 s
 Thread 1 reached 1000000000 iterations, elapsed: 1.102 s
 Thread 0 reached 2000000000 iterations, elapsed: 2.056 s
