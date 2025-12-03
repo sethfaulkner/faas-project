@@ -39,7 +39,7 @@ Thread 0 finished 10000000000 iterations in 20.392 s
 
 Threads were forced to run only on cores 0 and 1, slowing down performance.
 
-## Mult-tenant
+## Multi-Tenant
 
 
 
