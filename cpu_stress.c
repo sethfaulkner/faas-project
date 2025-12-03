@@ -1,14 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
 #include <time.h>
 
-#define NUM_THREADS 2
-#define TOTAL_ITERATIONS 10000000000
-#define CHECKPOINT 1000000000
+unsigned long NUM_THREADS;
+unsigned long TOTAL_ITERATIONS;
+unsigned long CHECKPOINT;
 
 void* stress_thread(void* arg) {
-    int thread_id = (int)(long)arg;
+    long thread_id = (long)arg;
     unsigned long i;
     double x = 0.0;
 
@@ -22,7 +23,7 @@ void* stress_thread(void* arg) {
             clock_gettime(CLOCK_MONOTONIC, &end);
             double elapsed = (end.tv_sec - start.tv_sec) +
                              (end.tv_nsec - start.tv_nsec) / 1e9;
-            printf("Thread %d reached %lu iterations, elapsed: %.3f s\n",
+            printf("Thread %ld reached %lu iterations, elapsed: %.3f s\n",
                    thread_id, i, elapsed);
         }
     }
@@ -31,20 +32,32 @@ void* stress_thread(void* arg) {
     double total_elapsed = (end.tv_sec - start.tv_sec) +
                            (end.tv_nsec - start.tv_nsec) / 1e9;
 
-    printf("Thread %d finished %lu iterations in %.3f s\n",
-           thread_id, (unsigned long)TOTAL_ITERATIONS, total_elapsed);
+    printf("Thread %ld finished %lu iterations in %.3f s\n",
+           thread_id, TOTAL_ITERATIONS, total_elapsed);
 
     return NULL;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc < 4) {
+        printf("Usage: %s <num_threads> <total_iterations> <checkpoint>\n", argv[0]);
+        return 1;
+    }
+
+    NUM_THREADS = strtoul(argv[1], NULL, 10);
+    TOTAL_ITERATIONS = strtoul(argv[2], NULL, 10);
+    CHECKPOINT = strtoul(argv[3], NULL, 10);
+
     pthread_t threads[NUM_THREADS];
 
     for (long i = 0; i < NUM_THREADS; i++) {
-        pthread_create(&threads[i], NULL, stress_thread, (void*)i);
+        if (pthread_create(&threads[i], NULL, stress_thread, (void*)i) != 0) {
+            perror("pthread_create");
+            return 1;
+        }
     }
 
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (long i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
 

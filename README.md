@@ -27,3 +27,8 @@ CPU(s):                   6
 $ ls /dev/kvm
 /dev/kvm
 ```
+
+Build the payload
+```bash
+gcc -static -O2 -o cpu_stress cpu_stress.c -lm -lpthread
+```

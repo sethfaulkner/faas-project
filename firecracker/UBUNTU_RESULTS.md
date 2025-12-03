@@ -41,6 +41,8 @@ Threads were forced to run only on cores 0 and 1, slowing down performance.
 
 ## Mult-tenant
 
+
+
 ### Tenant 1
 Firecracker was pinned to cores 0 and 1
 ```bash
@@ -122,6 +124,14 @@ Thread 0 finished 10000000000 iterations in 15.222 s
 
 The first tenant was actually faster. This is due to the CPU being fully allocated, which reduces throttling.
 
+# CPU Pinning - Skewed Allowed Quota - 
+
+## Isolated
+
+```bash
+sudo systemd-run --scope -p AllowedCPUs=0,1 -p CPUQuota=60% -p CPUQuotaPeriodSec=1s ./firecracker --no-api --config-file vmconfig.json
+```
+
 # CPU Pinning - Skewed Weight
 
 ## Isolated
@@ -150,3 +160,5 @@ sudo systemd-run --scope -p AllowedCPUs=1,2 -p CPUWeight=700 ./firecracker --no-
 Thread 0 finished 10000000000 iterations in 15.484 s
 Thread 1 finished 10000000000 iterations in 15.897 s
 ```
+
+
